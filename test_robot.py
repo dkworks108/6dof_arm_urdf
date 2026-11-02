@@ -24,32 +24,43 @@ print(f"Total links: {len(links)}")
 print(f"Total joints: {len(joints)}")
 
 link_set = set(links)
-movable_joints = []
+arm_joints = []
+gripper_joints = []
 all_joints_valid = True
 has_tool0 = "tool0" in link_set
+has_tool_link = "tool_link" in link_set
+has_gripper_base = "gripper_base_link" in link_set
 
 for j in joints:
     name = j.attrib.get('name')
     jtype = j.attrib.get('type')
     parent = j.find('parent').attrib.get('link') if j.find('parent') is not None else None
     child = j.find('child').attrib.get('link') if j.find('child') is not None else None
+    axis = j.find('axis').attrib.get('xyz') if j.find('axis') is not None else "fixed"
 
-    print(f" - Joint: {name} | Type: {jtype} | Parent: {parent} -> Child: {child}")
+    print(f" - Joint: {name:<18} | Type: {jtype:<10} | Axis: {axis:<10} | Parent: {parent:<18} -> Child: {child}")
 
     if parent not in link_set or child not in link_set:
         print(f"   ERROR: Joint {name} links missing: parent={parent}, child={child}")
         all_joints_valid = False
 
-    if jtype in ['revolute', 'continuous', 'prismatic']:
-        movable_joints.append(name)
+    if jtype in ['revolute', 'continuous']:
+        arm_joints.append(name)
+    elif jtype == 'prismatic':
+        gripper_joints.append(name)
 
-print(f"Movable joints count: {len(movable_joints)}")
-print(f"Has tool0 frame: {has_tool0}")
+print(f"\nArm revolute joints ({len(arm_joints)}): {arm_joints}")
+print(f"Gripper prismatic joints ({len(gripper_joints)}): {gripper_joints}")
+print(f"Total movable joints: {len(arm_joints) + len(gripper_joints)}")
+print(f"Flange frame (tool0) present: {has_tool0}")
+print(f"Gripper base present: {has_gripper_base}")
+print(f"TCP frame (tool_link) present: {has_tool_link}")
 
 # checks
-if all_joints_valid and len(movable_joints) == 6 and has_tool0:
-    print("PASS: 6-DOF Industrial Arm verification passed!")
+if (all_joints_valid and len(arm_joints) == 6 and len(gripper_joints) == 2 
+    and has_tool0 and has_gripper_base and has_tool_link):
+    print("\nPASS: 6-DOF Industrial Arm + Parallel Gripper verification passed successfully!")
     sys.exit(0)
 else:
-    print("FAIL: Verification failed!")
+    print("\nFAIL: Verification failed!")
     sys.exit(1)
