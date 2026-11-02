@@ -1,5 +1,13 @@
+# Python cache
 __pycache__/
 *.pyc
+
+# Colcon / ROS 2 build artifacts
+build/
+install/
+log/
+
+# Test reports and temporary logs
 *test_report.txt
 *gazebo_test.txt
 pybullet_*.png
