@@ -1,7 +1,8 @@
 import os
 import subprocess
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
@@ -14,14 +15,38 @@ def generate_launch_description():
     pkg_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     xacro_path = os.path.join(pkg_dir, 'urdf', 'robot.xacro')
     controllers_yaml = os.path.join(pkg_dir, 'config', 'controllers.yaml')
+    rviz_config = os.path.join(pkg_dir, 'config', 'rviz.rviz')
 
     if not os.path.exists(xacro_path):
         try:
             pkg_share = get_package_share_directory('arm_6dof_description')
             xacro_path = os.path.join(pkg_share, 'urdf', 'robot.xacro')
             controllers_yaml = os.path.join(pkg_share, 'config', 'controllers.yaml')
+            rviz_config = os.path.join(pkg_share, 'config', 'rviz.rviz')
         except Exception:
             pass
+
+    declared_args = [
+        DeclareLaunchArgument(
+            'headless',
+            default_value='false',
+            description='Run Gazebo in headless mode (server only)'
+        ),
+        DeclareLaunchArgument(
+            'rviz',
+            default_value='false',
+            description='Launch RViz2 along with Gazebo simulation'
+        ),
+        DeclareLaunchArgument(
+            'world',
+            default_value='empty.sdf',
+            description='Gazebo SDF world file name or path'
+        )
+    ]
+
+    headless_arg = LaunchConfiguration('headless')
+    rviz_arg = LaunchConfiguration('rviz')
+    world_arg = LaunchConfiguration('world')
 
     # Expand xacro to URDF string
     robot_desc = subprocess.check_output([
@@ -44,11 +69,15 @@ def generate_launch_description():
 
     # 2. Launch Gazebo Fortress (Ignition) via ros_gz_sim
     ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
+    gz_args = PythonExpression([
+        "'-s -r ' + '", world_arg, "' if '", headless_arg, "' == 'true' else '-r ' + '", world_arg, "'"
+    ])
+
     gz_sim_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={'gz_args': '-r empty.sdf'}.items()
+        launch_arguments={'gz_args': gz_args}.items()
     )
 
     # 3. Spawn robot entity in Gazebo
@@ -105,11 +134,25 @@ def generate_launch_description():
         )
     )
 
-    return LaunchDescription([
-        node_robot_state_publisher,
-        gz_sim_launch,
-        spawn_entity,
-        bridge_clock,
-        joint_state_broadcaster_spawner,
-        delay_controllers_spawner
-    ])
+    # 8. Optional RViz
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_config],
+        parameters=[{'use_sim_time': True}],
+        condition=IfCondition(rviz_arg)
+    )
+
+    return LaunchDescription(
+        declared_args + [
+            node_robot_state_publisher,
+            gz_sim_launch,
+            spawn_entity,
+            bridge_clock,
+            joint_state_broadcaster_spawner,
+            delay_controllers_spawner,
+            rviz_node
+        ]
+    )

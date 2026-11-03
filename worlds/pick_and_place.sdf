@@ -1,0 +1,282 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="pick_and_place_world">
+    <!-- Simulation Physics settings -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Core Ignition Gazebo System Plugins -->
+    <plugin
+      filename="ignition-gazebo-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-contact-system"
+      name="gz::sim::systems::Contact">
+    </plugin>
+
+    <!-- Sunlight Directional Light -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.85 0.85 0.85 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.2 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.82 0.82 0.84 1</ambient>
+            <diffuse>0.82 0.82 0.84 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Robot Mounting Base Pad -->
+    <model name="robot_base_pad">
+      <static>true</static>
+      <pose>0 0 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.22</radius>
+              <length>0.01</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.25 0.25 0.28 1</ambient>
+            <diffuse>0.25 0.25 0.28 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== Pick Table ==================== -->
+    <model name="pick_table">
+      <static>true</static>
+      <pose>0.45 0.22 0.075 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.32 0.32 0.15</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.2</mu>
+                <mu2>1.2</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="body">
+          <geometry>
+            <box>
+              <size>0.32 0.32 0.15</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.35 0.55 1</ambient>
+            <diffuse>0.2 0.35 0.55 1</diffuse>
+            <specular>0.4 0.4 0.4 1</specular>
+          </material>
+        </visual>
+        <!-- Visual target outline marker on table surface -->
+        <visual name="pick_target_pad">
+          <pose>0 0 0.076 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.06</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+            <diffuse>0.9 0.9 0.95 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== Place Table ==================== -->
+    <model name="place_table">
+      <static>true</static>
+      <pose>0.45 -0.22 0.075 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.32 0.32 0.15</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.2</mu>
+                <mu2>1.2</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="body">
+          <geometry>
+            <box>
+              <size>0.32 0.32 0.15</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.50 0.35 1</ambient>
+            <diffuse>0.25 0.50 0.35 1</diffuse>
+            <specular>0.4 0.4 0.4 1</specular>
+          </material>
+        </visual>
+        <!-- Place target landing zone marker -->
+        <visual name="place_target_pad">
+          <pose>0 0 0.076 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.06</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.95 0.85 0.2 1</ambient>
+            <diffuse>0.95 0.85 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== Target Graspable Cube ==================== -->
+    <!-- Dimensions: 35mm x 35mm x 45mm, Mass: 0.05 kg (50g) -->
+    <model name="target_cube">
+      <pose>0.45 0.22 0.175 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.05</mass>
+          <inertia>
+            <!-- I = (1/12) * m * (h^2 + d^2) -->
+            <ixx>0.0000136</ixx>
+            <ixy>0.0</ixy>
+            <ixz>0.0</ixz>
+            <iyy>0.0000136</iyy>
+            <iyz>0.0</iyz>
+            <izz>0.0000102</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.035 0.035 0.045</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.8</mu>
+                <mu2>1.8</mu2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <kp>1000000.0</kp>
+                <kd>1.0</kd>
+                <min_depth>0.001</min_depth>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.035 0.035 0.045</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.88 0.15 0.15 1</ambient>
+            <diffuse>0.88 0.15 0.15 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== Place Receptacle Bin ==================== -->
+    <!-- Low-profile container tray at the drop zone to catch placed object -->
+    <model name="place_tray">
+      <static>true</static>
+      <pose>0.45 -0.22 0.155 0 0 0</pose>
+      <link name="link">
+        <visual name="rim_front">
+          <pose>0 0.07 0.015 0 0 0</pose>
+          <geometry><box><size>0.15 0.01 0.03</size></box></geometry>
+          <material><ambient>0.9 0.7 0.1 1</ambient><diffuse>0.9 0.7 0.1 1</diffuse></material>
+        </visual>
+        <visual name="rim_back">
+          <pose>0 -0.07 0.015 0 0 0</pose>
+          <geometry><box><size>0.15 0.01 0.03</size></box></geometry>
+          <material><ambient>0.9 0.7 0.1 1</ambient><diffuse>0.9 0.7 0.1 1</diffuse></material>
+        </visual>
+        <visual name="rim_left">
+          <pose>0.07 0 0.015 0 0 0</pose>
+          <geometry><box><size>0.01 0.15 0.03</size></box></geometry>
+          <material><ambient>0.9 0.7 0.1 1</ambient><diffuse>0.9 0.7 0.1 1</diffuse></material>
+        </visual>
+        <visual name="rim_right">
+          <pose>-0.07 0 0.015 0 0 0</pose>
+          <geometry><box><size>0.01 0.15 0.03</size></box></geometry>
+          <material><ambient>0.9 0.7 0.1 1</ambient><diffuse>0.9 0.7 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
+

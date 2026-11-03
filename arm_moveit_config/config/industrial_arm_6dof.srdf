@@ -30,6 +30,52 @@
         <joint name="joint_6" value="0.0"/>
     </group_state>
 
+    <!-- PICK AND PLACE ARM STATES -->
+    <group_state name="pick_ready" group="arm">
+        <joint name="joint_1" value="0.4547"/>
+        <joint name="joint_2" value="0.3259"/>
+        <joint name="joint_3" value="1.6156"/>
+        <joint name="joint_4" value="0.0"/>
+        <joint name="joint_5" value="1.2000"/>
+        <joint name="joint_6" value="0.0"/>
+    </group_state>
+
+    <group_state name="pick_grasp" group="arm">
+        <joint name="joint_1" value="0.4547"/>
+        <joint name="joint_2" value="0.4971"/>
+        <joint name="joint_3" value="1.7572"/>
+        <joint name="joint_4" value="0.0"/>
+        <joint name="joint_5" value="0.8873"/>
+        <joint name="joint_6" value="0.0"/>
+    </group_state>
+
+    <group_state name="transit" group="arm">
+        <joint name="joint_1" value="0.0"/>
+        <joint name="joint_2" value="0.1647"/>
+        <joint name="joint_3" value="1.6862"/>
+        <joint name="joint_4" value="0.0"/>
+        <joint name="joint_5" value="1.2907"/>
+        <joint name="joint_6" value="0.0"/>
+    </group_state>
+
+    <group_state name="place_ready" group="arm">
+        <joint name="joint_1" value="-0.4547"/>
+        <joint name="joint_2" value="0.3089"/>
+        <joint name="joint_3" value="1.5851"/>
+        <joint name="joint_4" value="0.0"/>
+        <joint name="joint_5" value="1.2475"/>
+        <joint name="joint_6" value="0.0"/>
+    </group_state>
+
+    <group_state name="place_drop" group="arm">
+        <joint name="joint_1" value="-0.4547"/>
+        <joint name="joint_2" value="0.4971"/>
+        <joint name="joint_3" value="1.7572"/>
+        <joint name="joint_4" value="0.0"/>
+        <joint name="joint_5" value="0.8873"/>
+        <joint name="joint_6" value="0.0"/>
+    </group_state>
+
     <!-- GRIPPER STATES -->
     <group_state name="open" group="gripper">
         <joint name="left_finger_joint" value="0.035"/>
