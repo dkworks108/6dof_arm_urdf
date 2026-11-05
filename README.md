@@ -1,4 +1,4 @@
-# 02_6dof_industrial_arm: 6-DOF Industrial Manipulator with Parallel Gripper
+# _6dof_industrial_arm: 6-DOF Industrial Manipulator with Parallel Gripper
 
 A fully articulated 6-DOF industrial robot manipulator (UR5 / KUKA style) equipped with an articulated wrist and a functional two-finger parallel gripper. Designed for ROS 2 Humble, Gazebo Fortress (Ignition), and MoveIt 2 motion planning with complete Pick-and-Place simulation and physics validation.
 
